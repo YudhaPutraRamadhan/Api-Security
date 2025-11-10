@@ -1,0 +1,16 @@
+{
+  "name": "api-security",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Yudha Putra Ramadhan",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^5.1.0",
+    "sqlite3": "^5.1.7"
+  }
+}

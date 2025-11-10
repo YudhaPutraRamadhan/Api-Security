@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Keamanan API</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; background-color: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        header { background-color: #0056b3; color: white; padding: 20px 30px; }
+        header h1 { margin: 0; }
+        main { padding: 30px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #0056b3; margin-top: 0; }
+        .btn { padding: 10px 18px; border: none; border-radius: 5px; font-weight: 600; cursor: pointer; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-primary:hover { background-color: #0069d9; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .api-key-list { list-style: none; padding: 0; }
+        .api-key-list li { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 12px; border: 1px solid #eee; border-radius: 5px; margin-bottom: 10px; }
+        .api-key-list code { background: #e9ecef; padding: 3px 6px; border-radius: 3px; }
+        #message-area { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Dashboard Keamanan API</h1>
+        </header>
+
+        <main>
+            <section class="section">
+                <h2>Manajemen API Keys</h2>
+                
+                <button class="btn btn-primary" id="btn-generate">Buat API Key Baru</button>
+                <div id="message-area"></div> <h3 style="margin-top: 20px; font-size: 16px;">Keys Aktif</h3>
+                <ul class="api-key-list" id="key-list">
+                    <li>
+                        <span>Contoh Key (Static)</span>
+                        <div>
+                            <code>prod_sk_123...abc</code>
+                            <button class="btn btn-danger btn-sm">Cabut</button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+            
+            </main>
+    </div>
+
+    <script>
+
+        const generateButton = document.getElementById('btn-generate');
+        const keyList = document.getElementById('key-list');
+        const messageArea = document.getElementById('message-area');
+
+        generateButton.addEventListener('click', async () => {
+            console.log('Tombol diklik! Mengirim permintaan ke server...');
+            messageArea.textContent = 'Membuat key...';
+            
+            try {
+                const response = await fetch('/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                console.log('Response JSON:', data);
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Gagal mengambil data');
+                }
+
+                messageArea.textContent = data.message;
+                messageArea.style.color = 'green';
+                
+                const newKeyItem = document.createElement('li');
+                newKeyItem.innerHTML = `
+                    <span>Key Baru (Dibuat ${new Date().toLocaleTimeString()})</span>
+                    <div>
+                        <code>${data.apikey}</code>
+                        <button class="btn btn-danger btn-sm">Cabut</button>
+                    </div>
+                `;
+                
+                keyList.prepend(newKeyItem);
+
+            } catch (error) {
+                console.error('Error:', error);
+                messageArea.textContent = `Error: ${error.message}`;
+                messageArea.style.color = 'red';
+            }
+        });
+    </script>
+    </body>
+</html>
